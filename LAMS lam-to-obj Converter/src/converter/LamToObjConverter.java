@@ -21,7 +21,6 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import jdk.internal.util.xml.impl.Pair;
 
 /**
  *
@@ -79,37 +78,41 @@ public class LamToObjConverter {
     }
     
     public void getFaces(){
-        if(spherical.size()>0){
+        /*if(spherical.size()>0){
             ArrayList<Face> faces = new ArrayList<Face>();
-            Map<Float,List<Integer>> sortedVertices = new HashMap<Float,List<Integer>>();
-            List<Integer> val;
+            Map<Float,List<Integer>> phiSortedVertices = new HashMap<Float,List<Integer>>();
+            Map<Float,List<Integer>> thetaSortedVertices = new HashMap<Float,List<Integer>>();
+            List<Integer> phiVal;
+            List<Integer> thetaVal;
             float phi = spherical.get(0).phi;
             for(int i = 0;i<spherical.size();i++){
-                val = sortedVertices.get(spherical.get(i).phi);
-                if(val==null){
-                    val = new ArrayList<Integer>();
-                    val.add(new Integer(i+1));
-                    sortedVertices.put(spherical.get(i).phi,val);
+                phiVal = phiSortedVertices.get(spherical.get(i).phi);
+                thetaVal = thetaSortedVertices.get(spherical.get(i).theta);
+                if(phiVal==null){
+                    phiVal = new ArrayList<Integer>();
+                    phiVal.add(new Integer(i+1));
+                    phiSortedVertices.put(spherical.get(i).phi,phiVal);
                 }
                 else{
-                    val.add(new Integer(i));
+                    phiVal.add(new Integer(i));
+                }
+                if(thetaVal==null){
+                    thetaVal = new ArrayList<Integer>();
+                    thetaVal.add(new Integer(i+1));
+                    thetaSortedVertices.put(spherical.get(i).theta,thetaVal);
+                }
+                else{
+                    thetaVal.add(new Integer(i));
                 }
             }
             
-           List<Float> keys = new ArrayList<Float>(sortedVertices.keySet());
-           Collections.sort(keys);
-           List<Integer> currentTrace = sortedVertices.get(keys.get(0));
-           List<Integer> nextTrace = sortedVertices.get(keys.get((1)%keys.size()));
-           List<Integer> previousTrace = sortedVertices.get(keys.get(keys.size()-1));
-           if(keys.size()>1){
-                for(int i = 1;i<keys.size();i++){
-                    for(int j = 0;j<currentTrace.size()-1;j++){
-                        faces.add(new Face(currentTrace.get(j),currentTrace.get(j+1),previousTrace.get((j+1)%(previousTrace.size()))));
-                        faces.add(new Face(currentTrace.get(j),currentTrace.get(j+1),nextTrace.get(j%(nextTrace.size()-1))));
-                    }
-                    previousTrace = currentTrace;
-                    currentTrace = nextTrace;
-                    nextTrace = sortedVertices.get(keys.get(i));
+           List<Float> phiKeys = new ArrayList<Float>(phiSortedVertices.keySet());
+           List<Float> thetaKeys = new ArrayList<Float>(thetaSortedVertices.keySet());
+           Collections.sort(phiKeys);
+           Collections.sort(thetaKeys);
+           if(thetaKeys.size()>1 && phiKeys.size()>1){
+                for(int i = 1;i<phiKeys.size();i++){
+                    
                 }
             }
            else{
@@ -117,9 +120,81 @@ public class LamToObjConverter {
                         faces.add(new Face(currentTrace.get(j),currentTrace.get(j+1),previousTrace.get((j+1)%(previousTrace.size()))));
                         faces.add(new Face(currentTrace.get(j),currentTrace.get(j+1),nextTrace.get(j%(nextTrace.size()-1))));
                     }
-           }
+           }*/
+        
+        if(cartesian.size()>0){
+            ArrayList<Face> faces = new ArrayList<Face>();
+            for(int i = 0;i<cartesian.size()-1;i++){
+                //FloatPair p = new FloatPair(spherical.get(i).phi,spherical.get(i).theta);
+                int v1 = -1;
+                double distance1 = -1.0;
+                int v2 = -1;
+                double distance2 = -1.0;
+                int v3 = -1;
+                double distance3 = -1.0;
+                int v4 = -1;
+                double distance4 = -1.0;
+                for(int j = 0;j<cartesian.size();j++){
+                    if(j!= i){
+                        double distance = cartesian.get(i).doubleDistance(cartesian.get(j));
+                        if(distance1==-1){
+                            distance1 = distance;
+                            v1 = j;
+                        }
+                        else if(distance<=distance1){
+                            distance4 = distance3;
+                            v4=v3;
+                            distance3 = distance2;
+                            v3=v2;
+                            distance2=distance1;
+                            v2=v1;
+                            distance1 = distance;
+                            v1 = j;
+                        }
+                        else if(distance<=distance2){
+                            distance4 = distance3;
+                            v4=v3;
+                            distance3 = distance2;
+                            v3=v2;
+                            distance2=distance;
+                            v2=j;
+                        }
+                        else if(distance<=distance3){
+                            distance4 = distance3;
+                            v4=v3;
+                            distance3 = distance;
+                            v3=j;
+                        }
+                        else if(distance<=distance4){
+                            distance4 = distance;
+                            v4=j;
+                        }
+                    }
+                }
+                if(v1!=-1 && v2!=-1){
+                    if(v1!=v2){
+                        faces.add(new Face(i+2,v1+1,v2+1));
+                    }
+                    if(v3!=-1){
+                        if(v2!=v3){
+                            faces.add(new Face(i+2,v2+1,v3+1));
+                        }
+                        if(v3!=v1){
+                            faces.add(new Face(i+2,v3+1,v1+1));
+                        }
+                        if(v4!=-1){
+                            if(v3!=v4);
+                                faces.add(new Face(i+2,v3+1,v4+1));
+                            if(v4!=v1);
+                                faces.add(new Face(i+2,v4+1,v1+1));
+                            if(v4!=v2);
+                                faces.add(new Face(i+2,v4+1,v2+1));
+                        }
+                    }
+                        
+                }
+            }
            
-            
             for(Face f:faces){
                 if(f.isTriangle){
                     objContents.add("f  " + f.v1 + "  " + f.v2 + "  " + f.v3);
@@ -159,6 +234,16 @@ public class LamToObjConverter {
     public SphericalCoordinate getSpherical(String text){
         String temp[] = text.split(",");
         return new SphericalCoordinate(new Float(temp[0]),new Float(temp[1]),new Float(temp[2]));
+    }
+    
+    private class FloatPair{
+        float key;
+        float value;
+        
+        FloatPair(float key, float value){
+            this.key = key;
+            this.value = value;
+        }
     }
     
 }

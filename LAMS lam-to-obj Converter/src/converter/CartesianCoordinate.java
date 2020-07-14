@@ -31,4 +31,17 @@ public class CartesianCoordinate {
         this.y = (float)y;
         this.z = (float)z;
     }
+    
+    public float distance(CartesianCoordinate cc){
+        Double xret = new Double(this.x-cc.x);
+        Double yret = new Double(this.y - cc.y);
+        Double zret = new Double(this.z - cc.z);
+        return (float) Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0) + Math.pow(zret, 2.0));
+    }
+    public double doubleDistance(CartesianCoordinate cc){
+        Double xret = new Double(this.x - cc.x);
+        Double yret = new Double(this.y - cc.y);
+        Double zret = new Double(this.z - cc.z);
+        return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0) + Math.pow(zret, 2.0));
+    }
 }

@@ -43,4 +43,20 @@ public class Face {
         this.v3 = v3;
         this.v4 = v4;
     }
+    
+    public boolean equals(Face f){
+        if(f.isTriangle && this.isTriangle){
+            if((this.v1+this.v2+this.v3+this.v4) == (f.v1+f.v2+f.v3+f.v4)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+                
+                
+    }
 }

@@ -60,10 +60,13 @@ public class SphericalCoordinate {
      */
     public CartesianCoordinate getCartesianCoordiante(){
         CartesianCoordinate result = new CartesianCoordinate();
-        float opp = (float)(Math.sin((double)this.theta))*this.r;
-        result.x = (float)(Math.cos((double)this.phi))*opp;
-        result.y = (float)(Math.sin((double)this.phi))*opp;
-        result.z = (float)(Math.cos((double)this.theta))*this.r;
+        Double tempPhi = new Double(this.phi)*Math.PI/180;
+        Double tempTheta = new Double(this.theta)*Math.PI/180;
+        Double tempR = new Double(this.r);
+        double opp = (Math.sin(tempPhi))*tempR;
+        result.x = (float)(Math.cos(tempTheta)*opp);
+        result.y = (float)(Math.sin(tempTheta)*opp);
+        result.z = (float)(Math.cos(tempPhi)*tempR);
         
         return result;
     }
