@@ -54,7 +54,7 @@ public class Converter extends javax.swing.JFrame {
         statusLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Find");
+        setTitle("LAM to OBJ Converter");
 
         jLabel1.setText(".lam file:");
 
