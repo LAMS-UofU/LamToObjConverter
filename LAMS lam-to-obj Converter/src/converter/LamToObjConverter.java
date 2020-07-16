@@ -189,6 +189,12 @@ public class LamToObjConverter {
                                 faces.add(new Face(i+2,v4+1,v1+1));
                             if(v4!=v2);
                                 faces.add(new Face(i+2,v4+1,v2+1));
+                            if(v3!=v1);
+                                faces.add(new Face(i+2,v3+1,v1+1));
+                            if(v2!=v3);
+                                faces.add(new Face(i+2,v2+1,v3+1));
+                                
+                        
                         }
                     }
                         
