@@ -31,8 +31,8 @@ public class LamToObjConverter {
     private File saveFile;
     private ArrayList<String> objContents;
     private ArrayList<Face> faces;
-    private ArrayList<SphericalCoordinate> spherical;
-    private ArrayList<CartesianCoordinate> cartesian;
+    ArrayList<SphericalCoordinate> spherical;
+    ArrayList<CartesianCoordinate> cartesian;
     
     public LamToObjConverter(){
         spherical = new ArrayList<SphericalCoordinate>();
@@ -124,7 +124,7 @@ public class LamToObjConverter {
         
         if(cartesian.size()>0){
             ArrayList<Face> faces = new ArrayList<Face>();
-            for(int i = 0;i<cartesian.size()-1;i++){
+            for(int i = 0;i<cartesian.size();i++){
                 //FloatPair p = new FloatPair(spherical.get(i).phi,spherical.get(i).theta);
                 int v1 = -1;
                 double distance1 = -1.0;
@@ -151,6 +151,10 @@ public class LamToObjConverter {
                             distance1 = distance;
                             v1 = j;
                         }
+                        else if(distance2==-1){
+                            distance2 = distance;
+                            v2 = j;
+                        }
                         else if(distance<=distance2){
                             distance4 = distance3;
                             v4=v3;
@@ -159,11 +163,19 @@ public class LamToObjConverter {
                             distance2=distance;
                             v2=j;
                         }
+                        else if(distance3==-1){
+                            distance3 = distance;
+                            v3 = j;
+                        }
                         else if(distance<=distance3){
                             distance4 = distance3;
                             v4=v3;
                             distance3 = distance;
                             v3=j;
+                        }
+                        else if(distance4==-1){
+                            distance4 = distance;
+                            v4 = j;
                         }
                         else if(distance<=distance4){
                             distance4 = distance;
@@ -173,28 +185,22 @@ public class LamToObjConverter {
                 }
                 if(v1!=-1 && v2!=-1){
                     if(v1!=v2){
-                        faces.add(new Face(i+2,v1+1,v2+1));
+                        faces.add(new Face(i+1,v1+1,v2+1));
                     }
                     if(v3!=-1){
                         if(v2!=v3){
-                            faces.add(new Face(i+2,v2+1,v3+1));
+                            faces.add(new Face(i+1,v2+1,v3+1));
                         }
                         if(v3!=v1){
-                            faces.add(new Face(i+2,v3+1,v1+1));
+                            faces.add(new Face(i+1,v3+1,v1+1));
                         }
                         if(v4!=-1){
                             if(v3!=v4);
-                                faces.add(new Face(i+2,v3+1,v4+1));
+                                faces.add(new Face(i+1,v3+1,v4+1));
                             if(v4!=v1);
-                                faces.add(new Face(i+2,v4+1,v1+1));
+                                faces.add(new Face(i+1,v4+1,v1+1));
                             if(v4!=v2);
-                                faces.add(new Face(i+2,v4+1,v2+1));
-                            if(v3!=v1);
-                                faces.add(new Face(i+2,v3+1,v1+1));
-                            if(v2!=v3);
-                                faces.add(new Face(i+2,v2+1,v3+1));
-                                
-                        
+                                faces.add(new Face(i+1,v4+1,v2+1));
                         }
                     }
                         
