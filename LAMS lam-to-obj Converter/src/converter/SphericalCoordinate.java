@@ -70,4 +70,8 @@ public class SphericalCoordinate {
         
         return result;
     }
+    
+    public String toString(){
+        return this.r+"/"+this.theta+"/"+this.phi;
+    }
 }

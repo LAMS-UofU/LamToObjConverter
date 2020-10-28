@@ -44,4 +44,19 @@ public class CartesianCoordinate {
         Double zret = new Double(this.z - cc.z);
         return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0) + Math.pow(zret, 2.0));
     }
+    public double doubleDistancexy(CartesianCoordinate cc){
+        Double xret = new Double(this.x - cc.x);
+        Double yret = new Double(this.y - cc.y);
+        return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0));
+    }
+    public double doubleDistancexz(CartesianCoordinate cc){
+        Double xret = new Double(this.x - cc.x);
+        Double zret = new Double(this.z - cc.z);
+        return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(zret, 2.0));
+    }
+    public double doubleDistanceyz(CartesianCoordinate cc){
+        Double yret = new Double(this.y - cc.y);
+        Double zret = new Double(this.z - cc.z);
+        return Math.sqrt(Math.pow(yret, 2.0)+Math.pow(zret, 2.0));
+    }
 }
