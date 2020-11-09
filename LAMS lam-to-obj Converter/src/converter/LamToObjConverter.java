@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -32,8 +33,9 @@ public class LamToObjConverter {
     private File saveFile;
     private ArrayList<String> objContents;
     private ArrayList<Face> faces;
-    Map<Integer, ArrayList<Edge>> sortedEdges;
+    Map<String, Edge> mapEdges;
     ArrayList<Edge> edges;
+    ArrayList<Edge> recurssiveEdges;
     ArrayList<SphericalCoordinate> spherical;
     ArrayList<CartesianCoordinate> cartesian;
     private int numberOfStepsTheta = 0;
@@ -89,7 +91,7 @@ public class LamToObjConverter {
     
     public void createEdges(){
         edges = new ArrayList<Edge>();
-        sortedEdges = new HashMap<Integer, ArrayList<Edge>>();
+        mapEdges = new HashMap<String, Edge>();
         ArrayList<Edge> tempEdges = new ArrayList<Edge>();
         Map<String,Integer> slices = new HashMap<String,Integer>();
         ArrayList<Integer> tempVertexList;
@@ -108,19 +110,10 @@ public class LamToObjConverter {
                     String temp1 = String.valueOf(thetaSteps*i) + String.valueOf((phiSteps*(j+1))%360);
                     if(slices.containsKey(temp1)){
                         Edge tempEdge = new Edge(slices.get(temp),slices.get(temp1));
-                        edges.add(tempEdge); 
-                        tempEdgeArr = new ArrayList<Edge>();
-                        if(sortedEdges.containsKey(slices.get(temp))){
-                            tempEdgeArr = sortedEdges.get(slices.get(temp));
+                        edges.add(tempEdge);
+                        if(!mapEdges.containsKey(tempEdge.toString()) && !mapEdges.containsKey(tempEdge.toString1())){
+                            mapEdges.put(tempEdge.toString(),tempEdge);
                         }
-                        tempEdgeArr.add(tempEdge);
-                        sortedEdges.put(slices.get(temp), tempEdgeArr);
-                        tempEdgeArr = new ArrayList<Edge>();
-                        if(sortedEdges.containsKey(slices.get(temp1))){
-                            tempEdgeArr = sortedEdges.get(slices.get(temp1));
-                        }
-                        tempEdgeArr.add(tempEdge);
-                        sortedEdges.put(slices.get(temp1), tempEdgeArr);
                     }
                     if(thetaSteps*(i+1)>=180){
                         temp1 = String.valueOf((thetaSteps*(i+1))%180) + String.valueOf(((Math.abs((-1*phiSteps*(j))+360))%360));
@@ -131,18 +124,9 @@ public class LamToObjConverter {
                     if(slices.containsKey(temp1)){
                         Edge tempEdge = new Edge(slices.get(temp),slices.get(temp1));
                         edges.add(tempEdge); 
-                        tempEdgeArr = new ArrayList<Edge>();
-                        if(sortedEdges.containsKey(slices.get(temp))){
-                            tempEdgeArr = sortedEdges.get(slices.get(temp));
+                        if(!mapEdges.containsKey(tempEdge.toString()) && !mapEdges.containsKey(tempEdge.toString1())){
+                            mapEdges.put(tempEdge.toString(),tempEdge);
                         }
-                        tempEdgeArr.add(tempEdge);
-                        sortedEdges.put(slices.get(temp), tempEdgeArr);
-                        tempEdgeArr = new ArrayList<Edge>();
-                        if(sortedEdges.containsKey(slices.get(temp1))){
-                            tempEdgeArr = sortedEdges.get(slices.get(temp1));
-                        }
-                        tempEdgeArr.add(tempEdge);
-                        sortedEdges.put(slices.get(temp1), tempEdgeArr);
                     }
                 }
             }
@@ -152,74 +136,6 @@ public class LamToObjConverter {
     public Face getClockwiseFace(Face f){
         return new Face();
     }
-    
-    /*public Face getClockwiseFace(Face f){
-        int[] faceVertices = {f.v1-1,f.v2-1,f.v3-1};
-        int leftmost=f.v1-1;
-        int middle = f.v1-1;
-        int rightmost = f.v1-1;
-        CartesianCoordinate tempCC;
-        CartesianCoordinate leftmostCC;
-        CartesianCoordinate rightmostCC;
-        CartesianCoordinate middleCC;
-        int temp;
-        for(int i = 1;i<faceVertices.length;i++){
-            tempCC = cartesian.get(faceVertices[i]);
-            leftmostCC = cartesian.get(leftmost);
-            rightmostCC = cartesian.get(rightmost);
-            middleCC = cartesian.get(middle);
-            //if(cartesian.get(faceVertices[i]).x < cartesian.get(leftmost).x){
-            if(tempCC.x < leftmostCC.x){
-               leftmost = faceVertices[i];
-            }
-            else if(tempCC.x>leftmostCC.x){
-                if(tempCC.x>rightmostCC.x){
-                    rightmost = faceVertices[i];
-                }
-                else if(tempCC.x<rightmostCC.x){
-                    middle = faceVertices[i];
-                }
-                else if(tempCC.x==rightmostCC.x){
-                    if(tempCC.z < rightmostCC.z){
-                        rightmost = faceVertices[i];
-                     }
-                     else if(tempCC.z>rightmostCC.z){
-                        middle = faceVertices[i];
-                     }
-                     else if(tempCC.z==rightmostCC.z){
-                         if(tempCC.y < rightmostCC.y){
-                            rightmost = faceVertices[i];
-                         }
-                         else if(tempCC.y>rightmostCC.y){
-                            middle = faceVertices[i];
-                         }
-                    }
-                }
-            }
-            else if(tempCC.x==leftmostCC.x){
-                if(tempCC.z < leftmostCC.z){
-                    leftmost = faceVertices[i];
-                 }
-                 else if(tempCC.z>leftmostCC.z){
-                    middle = faceVertices[i];
-                 }
-                 else if(tempCC.z==leftmostCC.z){
-                     if(tempCC.y < leftmostCC.y){
-                        leftmost = faceVertices[i];
-                     }
-                     else if(tempCC.y>leftmostCC.y){
-                        middle = faceVertices[i];
-                     }
-                }
-            }
-        }
-        
-        return new Face(rightmost,middle,leftmost,true);
-    }*/
-    
-    /*public Face getCCFace(){
-        
-    }*/
     
     public void getFaces(){
         for(Face f:faces){
@@ -240,32 +156,77 @@ public class LamToObjConverter {
     
     public void createFaces(){
         faces = new ArrayList<Face>();
-        for(Integer i:sortedEdges.keySet()){
-            ArrayList<Edge> temp = sortedEdges.get(i);
-            if(temp.size()>1){
-                double distance = -1;
-                for(int j = 0;j<temp.size();j++){
-                    Edge tempEdge = new Edge();
-                    int tempIndex=0;
-                    for(int k=0;k<temp.size();k++){
-                        if(j!=k){
-                            tempIndex = k;
-                            tempEdge = temp.get(j).getCompletingEdge(temp.get(k));
-                            double tempDistance = cartesian.get(tempEdge.a).doubleDistance(cartesian.get(tempEdge.b));
-                            if(distance == -1){
-                                distance = tempDistance;
+        int size = faces.size();
+        int size1;
+        Stack<Edge> edgeStack = new Stack<Edge>();
+        edgeStack.addAll(edges);
+        //for(int i=0;i<edgeStack.size();i++){
+        for(Edge e1:edges){
+            //Edge[] tempEdges= new Edge[edges.size()];
+            //edgeStack.toArray(tempEdges);
+            //ArrayList<Edge> recEdges = new ArrayList<Edge>(Arrays.asList(tempEdges));
+            ArrayList<Edge> recEdges = new ArrayList<Edge>(edges);
+            ArrayList<ArrayList<Edge>> result;
+            size1 = size;
+            //Edge e1 = edgeStack.pop();
+            result= followEdgeDriver(recEdges,e1);
+            for(ArrayList<Edge> edgeArr:result){
+                if(edgeArr.size()>1 && edgeArr!=null){
+                    Face f = new Face(edgeArr,e1.getCommonVertex(edgeArr.get(0)),true);
+                    faces.add(f);
+                }
+            }
+            size = faces.size();
+            if(size==size1){
+                System.out.println("err");
+            }
+        }
+    }
+    
+    public ArrayList<ArrayList<Edge>> followEdgeDriver(ArrayList<Edge> recEdges, Edge baseEdge){
+        ArrayList<ArrayList<Edge>> result = new ArrayList<ArrayList<Edge>>();
+        ArrayList<Edge> tempResult;
+        tempResult = followEdge(recEdges,3,baseEdge.a,baseEdge.b,baseEdge);
+        while(tempResult.size()>0){
+            tempResult.add(baseEdge);
+            result.add(tempResult);
+            recEdges.remove(tempResult.get(0));
+            tempResult = followEdge(recEdges,3,baseEdge.a,baseEdge.b,baseEdge);
+        }
+        return result;
+    }
+    
+    public ArrayList<Edge> followEdge(ArrayList<Edge> recEdges, int steps, int endpoint, int vertex,Edge previousEdge){
+        ArrayList<Edge> result = new ArrayList<Edge>();
+        int index = 0;
+        if(steps==0){
+            return result;
+        }
+        else{
+            steps--;
+            for(Edge ed:recEdges){
+                if(previousEdge!=null && ed!=null){
+                    if(!ed.equals(previousEdge)){
+                        if(ed.contains(vertex)){
+                            if(ed.contains(endpoint)){
+                                result.add(ed);
+                                return result;
                             }
-                            else if(tempDistance<distance){
-                                distance = tempDistance;
+                            else{
+                                result = followEdge(recEdges,steps,endpoint,ed.getOtherVertex(vertex),ed);
+                                if(result.size()>0){
+                                    result.add(ed);
+                                    return result;
+                                }
                             }
                         }
+                        else{
+                        }
                     }
-                    //faces.add(this.getClockwiseFace(new Face(temp.get(j),temp.get(tempIndex),tempEdge,true)));
-                    faces.add(new Face(temp.get(j),temp.get(tempIndex),tempEdge,true));
-                    edges.add(tempEdge);
                 }
             }
         }
+        return result;
     }
     
     public void getVertexNormals(){
@@ -277,8 +238,9 @@ public class LamToObjConverter {
         this.getVertices();
         objContents.add("\r\n");
         this.createEdges();
-        this.getEdges();
+        
         this.createFaces();
+        this.getEdges();
         this.getFaces();
         try{
             FileWriter fw = new FileWriter(objFile);

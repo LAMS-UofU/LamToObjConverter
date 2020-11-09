@@ -59,4 +59,8 @@ public class CartesianCoordinate {
         Double zret = new Double(this.z - cc.z);
         return Math.sqrt(Math.pow(yret, 2.0)+Math.pow(zret, 2.0));
     }
+    
+    public String toString(){
+        return String.valueOf(this.x) + ',' + String.valueOf(this.y) + ',' + String.valueOf(this.z);
+    }
 }

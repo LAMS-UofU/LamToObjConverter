@@ -101,4 +101,13 @@ public class Edge {
         result.b = e1.getUncommonVertex(this);
         return result;
     }
+    
+    public int getOtherVertex(int a){
+        if(this.a == a){
+            return b;
+        }
+        else{
+            return this.a;
+        }
+    }
 }   

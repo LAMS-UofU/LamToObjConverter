@@ -5,6 +5,10 @@
  */
 package converter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 /** This class represents the face of a 3d object.
  * this method can represent a triangle or quad face.
  *
@@ -31,6 +35,47 @@ public class Face {
         }
         else{
             this.setTriangleFace(v1, v2, v3);
+        }
+    }
+    
+    public Face(ArrayList<Edge> list, int endpoint, boolean isZeroBased){
+        Set<Integer> tempList = new HashSet<Integer>();
+        tempList.add(endpoint);
+        for(Edge e:list){
+            tempList.add(e.a);
+            tempList.add(e.b);
+        }
+        Integer[] vertexList = new Integer[4];
+        tempList.toArray(vertexList);
+        if(isZeroBased){
+            if(tempList.size()==3){
+                this.v1 = vertexList[0]+1;
+                this.v2 = vertexList[1]+1;
+                this.v3 = vertexList[2]+1;
+                this.isTriangle = true;
+            }
+            else{
+                this.v1 = vertexList[0]+1;
+                this.v2 = vertexList[1]+1;
+                this.v3 = vertexList[2]+1;
+                this.v4 = vertexList[3]+1;
+                this.isTriangle = false;
+            }
+        }
+        else{
+            if(tempList.size()==3){
+                this.v1 = vertexList[0];
+                this.v2 = vertexList[1];
+                this.v3 = vertexList[2];
+                this.isTriangle = true;
+            }
+            else{
+                this.v1 = vertexList[0];
+                this.v2 = vertexList[1];
+                this.v3 = vertexList[2];
+                this.v4 = vertexList[3];
+                this.isTriangle = false;
+            }
         }
     }
     
