@@ -10,20 +10,14 @@ package converter;
  * @author tyjensen
  */
 public class CartesianCoordinate {
-    float x;
-    float y;
-    float z;
+    double x;
+    double y;
+    double z;
     
     public CartesianCoordinate(){
         this.x = 0.0f;
         this.y = 0.0f;
         this.z = 0.0f;
-    }
-    
-    public CartesianCoordinate(float x, float y, float z){
-        this.x = x;
-        this.y = y;
-        this.z = z;
     }
     
     public CartesianCoordinate(double x, double y, double z){
@@ -32,31 +26,31 @@ public class CartesianCoordinate {
         this.z = (float)z;
     }
     
-    public float distance(CartesianCoordinate cc){
+    /*public float distance(CartesianCoordinate cc){
         Double xret = new Double(this.x-cc.x);
         Double yret = new Double(this.y - cc.y);
         Double zret = new Double(this.z - cc.z);
         return (float) Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0) + Math.pow(zret, 2.0));
-    }
+    }*/
     public double doubleDistance(CartesianCoordinate cc){
-        Double xret = new Double(this.x - cc.x);
-        Double yret = new Double(this.y - cc.y);
-        Double zret = new Double(this.z - cc.z);
+        double xret = (this.x - cc.x);
+        double yret = (this.y - cc.y);
+        double zret = (this.z - cc.z);
         return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0) + Math.pow(zret, 2.0));
     }
     public double doubleDistancexy(CartesianCoordinate cc){
-        Double xret = new Double(this.x - cc.x);
-        Double yret = new Double(this.y - cc.y);
+        double xret = (this.x - cc.x);
+        double yret = (this.y - cc.y);
         return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(yret, 2.0));
     }
     public double doubleDistancexz(CartesianCoordinate cc){
-        Double xret = new Double(this.x - cc.x);
-        Double zret = new Double(this.z - cc.z);
+        double xret = (this.x - cc.x);
+        double zret = (this.z - cc.z);
         return Math.sqrt(Math.pow(xret, 2.0)+Math.pow(zret, 2.0));
     }
     public double doubleDistanceyz(CartesianCoordinate cc){
-        Double yret = new Double(this.y - cc.y);
-        Double zret = new Double(this.z - cc.z);
+        double yret = (this.y - cc.y);
+        double zret = (this.z - cc.z);
         return Math.sqrt(Math.pow(yret, 2.0)+Math.pow(zret, 2.0));
     }
     

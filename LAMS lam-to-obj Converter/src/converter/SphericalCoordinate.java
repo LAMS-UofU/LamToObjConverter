@@ -13,9 +13,9 @@ package converter;
  */
 
 public class SphericalCoordinate {
-    float r;
-    float theta;
-    float phi;
+    double r;
+    double theta;
+    double phi;
     
     /**This method is a default constructor for the SphericalCoordinate Class.
      * this method takes no parameters and will initialize (r,θ φ) to (0.0f,0.0f,0.0f) 
@@ -34,7 +34,7 @@ public class SphericalCoordinate {
      * @param theta the positive float value value from 0°  to 180° that represents the azimuthal angle.
      * @param phi the positive float value from 0°  to 360° that represents the polar angle 
      */
-    public SphericalCoordinate(float r, float theta, float phi){
+    public SphericalCoordinate(double r, double theta, double phi){
         this.r = r;
         this.theta = theta;
         this.phi = phi;
@@ -47,11 +47,11 @@ public class SphericalCoordinate {
      * @param theta the positive double value value from 0°  to 180° that represents the azimuthal angle.
      * @param phi the positive double value from 0°  to 360° that represents the polar angle 
      */
-    public SphericalCoordinate(double r, double theta, double phi){
+    /*public SphericalCoordinate(double r, double theta, double phi){
         this.r = (float)r;
         this.theta = (float)theta;
         this.phi = (float)phi;
-    }
+    }*/
     
     /**This method will convert the spherical coordinate represented by the class members to
      * the corresponding CartesianCoordinate object.
@@ -60,18 +60,17 @@ public class SphericalCoordinate {
      */
     public CartesianCoordinate getCartesianCoordiante(){
         CartesianCoordinate result = new CartesianCoordinate();
-        Double tempPhi = new Double(this.phi)*Math.PI/180;
-        Double tempTheta = new Double(this.theta)*Math.PI/180;
-        Double tempR = new Double(this.r);
-        double opp = (Math.sin(tempPhi))*tempR;
-        result.x = (float)(Math.cos(tempTheta)*opp);
-        result.y = (float)(Math.sin(tempTheta)*opp);
-        result.z = (float)(Math.cos(tempPhi)*tempR);
+        Double tempPhi = this.phi*Math.PI/180;
+        Double tempTheta = this.theta*Math.PI/180;
+        double opp = (Math.sin(tempPhi))*this.r;
+        result.x = (Math.cos(tempTheta)*opp);
+        result.y = (Math.sin(tempTheta)*opp);
+        result.z = (Math.cos(tempPhi)*this.r);
         
         return result;
     }
     
     public String toString(){
-        return this.r+"/"+this.theta+"/"+this.phi;
+        return "(" + this.theta+","+this.r+","+this.phi+")";
     }
 }
