@@ -38,13 +38,18 @@ public class LamToObjConverter {
     ArrayList<Edge> recurssiveEdges;
     ArrayList<SphericalCoordinate> spherical;
     ArrayList<CartesianCoordinate> cartesian;
+    ArrayList<Double> startAngles;
+    ArrayList<Double[]> rawLAMData;
+    int k;
+    double round=20;
     private int numberOfStepsTheta = 0;
     private int numberOfStepsPhi = 0;
     
     public LamToObjConverter(){
         spherical = new ArrayList<SphericalCoordinate>();
         cartesian = new ArrayList<CartesianCoordinate>();
-        System.out.println("hello");
+        startAngles = new ArrayList<Double>();
+        rawLAMData = new ArrayList<Double[]>();
     }
     
     /**The convert method will perform the conversion between the spherical coordinates stored in the .lam file
@@ -56,6 +61,8 @@ public class LamToObjConverter {
     public boolean convert(File lamFile){
         spherical = new ArrayList<SphericalCoordinate>();
         cartesian = new ArrayList<CartesianCoordinate>();
+        startAngles = new ArrayList<Double>();
+        rawLAMData = new ArrayList<Double[]>();
         try{
             Scanner s = new Scanner(lamFile);
             /*if(s.hasNextLine()){
@@ -66,11 +73,14 @@ public class LamToObjConverter {
             while(s.hasNextLine()){
                 String temp  = s.nextLine();
                 if(!temp.equals("")){
-                    getSpherical(temp);
+                    processLAMData(temp);
+                    
+                    //getSpherical(temp);
                 }
             }
             s.close();
-            //this.clearDuplicates();
+            getSpherical();
+            this.clearDuplicates();
             this.printSphericalData();
             System.out.println(this.spherical.get(0));
             for(SphericalCoordinate sc:spherical){
@@ -89,7 +99,7 @@ public class LamToObjConverter {
      */
     public void getVertices(){
         for(CartesianCoordinate cc:cartesian){
-            objContents.add("v  " + cc.x + "  " + cc.y + "  " + cc.z);
+            objContents.add("v  " + cc.dx + "  " + cc.dy + "  " + cc.dz);
         }
     }
     
@@ -261,35 +271,55 @@ public class LamToObjConverter {
         
     }
     
-    public void getSpherical(String text){
+    public void getSpherical(){
+        for(Double[] d:rawLAMData){
+            int omegaInd = startAngles.indexOf(d[2]);
+            double omega2=startAngles.get((omegaInd+1)%(startAngles.size()-1));
+            double omega1=d[2];
+            double phi1;
+            double phi2;
+            if(omega1>omega2){
+                phi1=d[2]+((360+omega2-omega1)/32)*d[1]-d[3];
+                phi2=d[2]+((360+omega2-omega1)/32)*d[1]-d[4];
+            }
+            else{
+                phi1=d[2]+((omega2-omega1)/32)*d[1]-d[3];
+                phi2=d[2]+((omega2-omega1)/32)*d[1]-d[4];
+            }
+            if(d[5]>0){
+                spherical.add(new SphericalCoordinate(d[5],d[0],phi1%360));
+            }
+            if(d[6]>0){
+                spherical.add(new SphericalCoordinate(d[6],d[0],phi2%360));
+            }
+            
+        }
+        
+        
+    }
+    
+    /*public void getSpherical(String text){
         String temp[] = text.split(",");
         double theta = new Double(temp[0]);
         double phi1;
         double phi2;
         double startAngle = new Double(temp[2])/64.0;
-        double offset1 = new Double(temp[3]);
-        double offset2 = new Double(temp[4]);
+        double offset1 = new Double(temp[3])/8.0;
+        double offset2 = new Double(temp[4])/8.0;
         double distance1 = new Double(temp[5])/1000;
         double distance2 = new Double(temp[6])/1000;
-        if(startAngle<=offset1){
-            phi1=offset1-startAngle;
-        }
-        else{
-            phi1=360+offset1-startAngle;
-        }
-        if(startAngle<=offset2){
-            phi2=offset2-startAngle;
-        }
-        else{
-            phi2=360+offset2-startAngle;
-        }
+        phi1 = startAngle-offset1;
+        phi2=startAngle-offset2;
         if(distance1!=0){
             this.spherical.add(new SphericalCoordinate(distance1,theta,phi1));
         }
         if(distance2!=0){
             this.spherical.add(new SphericalCoordinate(distance2,theta,phi2));
         }
-    }
+        if(!startAngles.contains(startAngle)){
+            startAngles.add(startAngle);
+        }
+    }*/
 
     public void clearDuplicates(){
         Map<String,ArrayList<SphericalCoordinate>> map = new HashMap<String,ArrayList<SphericalCoordinate>>();
@@ -297,7 +327,7 @@ public class LamToObjConverter {
         ArrayList<SphericalCoordinate> tempArr = new ArrayList<SphericalCoordinate>();
         for(SphericalCoordinate sc:this.spherical){
             tempArr = new ArrayList<SphericalCoordinate>();
-            tempKey = sc.theta + "," + sc.phi;
+            tempKey = roundDouble(sc.theta,this.round) + "," + roundDouble(sc.phi,this.round);
             if(map.containsKey(tempKey)){
                 tempArr = map.get(tempKey);
             }
@@ -305,20 +335,33 @@ public class LamToObjConverter {
             map.put(tempKey,tempArr);
         }
         this.spherical = new ArrayList<SphericalCoordinate>();
-        for(ArrayList<SphericalCoordinate> arr:map.values()){
+        for(String s:map.keySet()){
+            String[] tempStrArr = s.split(",");
+            double tempPhi = new Double(tempStrArr[1]);
+            double tempTheta = new Double(tempStrArr[0]);
+            ArrayList<SphericalCoordinate> arr = map.get(s);
             double average = 0.0;
             for(SphericalCoordinate sc:arr){
                 average+=sc.r;
             }
-            spherical.add(new SphericalCoordinate(average/arr.size(),arr.get(0).theta,arr.get(0).phi));
+            spherical.add(new SphericalCoordinate(average/arr.size(),tempTheta,tempPhi));
         }
+    }
+    
+    public double roundDouble(double d, double rounder){
+        double temp = new Double(Math.round(d/rounder));
+        return temp*rounder;
     }
 
     public void printSphericalData(){
         try{
             FileWriter fw = new FileWriter(new File("data.txt"));
-            
-            for(SphericalCoordinate sc:spherical){
+            /*for(Double d:startAngles){
+                fw.write(d.toString() + "\r\n");
+            }*/
+            ArrayList<SphericalCoordinate> sortedSet = new ArrayList<SphericalCoordinate>(spherical);
+            Collections.sort(sortedSet);
+            for(SphericalCoordinate sc:sortedSet){
                 fw.write(sc.toString() + "\r\n");
             }
             fw.flush();
@@ -328,6 +371,35 @@ public class LamToObjConverter {
         catch (IOException ex) {
             
         }
+    }
+
+    private void processLAMData(String data) {
+        String temp[] = data.split(",");
+        double theta = new Double(temp[0]);
+        double startAngle = new Double(temp[2]);
+        double offset1 = new Double(temp[3]);
+        double offset2 = new Double(temp[4]);
+        double distance1 = new Double(temp[5])/1000;
+        double distance2 = new Double(temp[6])/1000;
+        if(!startAngles.contains(startAngle)){
+            startAngles.add(startAngle);
+            k=0;
+        }
+        else{
+            k++;
+        }
+        if(offset1>255 || offset2>255){
+            offset1 = -(offset1-256);
+            offset2 = -(offset2-256);
+        }
+        if(startAngle>16383){
+           // System.out.println("start neg");
+        }
+        startAngle=startAngle/64.0;
+        offset1 = offset1/8.0;
+        offset2 = offset2/8.0;
+        Double[] tempArr = {theta,new Double(k),startAngle,offset1,offset2,distance1,distance2};
+        this.rawLAMData.add(tempArr);
     }
     
     private class FloatPair{

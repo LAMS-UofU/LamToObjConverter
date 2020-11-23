@@ -10,9 +10,9 @@ package converter;
  * @author tyjensen
  */
 public class Vector extends CartesianCoordinate {
-    float x;
-    float y;
-    float z;
+    double x;
+    double y;
+    double z;
     
     public Vector(){
         this.x = 0.0f;
@@ -21,9 +21,9 @@ public class Vector extends CartesianCoordinate {
     }
     
     public Vector(CartesianCoordinate origin, CartesianCoordinate p){
-        this.x = p.x-origin.x;
-        this.y = p.y-origin.y;
-        this.z = p.z-origin.z;
+        this.x = p.dx-origin.dx;
+        this.y = p.dy-origin.dy;
+        this.z = p.dz-origin.dz;
     }
     
     public Vector(float x, float y, float z){

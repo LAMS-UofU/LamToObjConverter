@@ -12,7 +12,7 @@ package converter;
  * @author Ty Jensen  
  */
 
-public class SphericalCoordinate {
+public class SphericalCoordinate implements Comparable{
     double r;
     double theta;
     double phi;
@@ -63,14 +63,46 @@ public class SphericalCoordinate {
         Double tempPhi = this.phi*Math.PI/180;
         Double tempTheta = this.theta*Math.PI/180;
         double opp = (Math.sin(tempPhi))*this.r;
-        result.x = (Math.cos(tempTheta)*opp);
-        result.y = (Math.sin(tempTheta)*opp);
-        result.z = (Math.cos(tempPhi)*this.r);
+        result.dx = (Math.cos(tempTheta)*opp);
+        result.dy = (Math.sin(tempTheta)*opp);
+        result.dz = (Math.cos(tempPhi)*this.r);
         
         return result;
     }
     
     public String toString(){
-        return "(" + this.theta+","+this.r+","+this.phi+")";
+        return "(" + this.theta+","+this.phi+","+this.r+")";
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        if(t.equals(null)){
+            throw new NullPointerException();
+        }
+        if(t instanceof SphericalCoordinate){
+            SphericalCoordinate scT = (SphericalCoordinate)t;
+            if(this.theta < scT.theta){
+                return -1;
+            }
+            else if(this.theta> scT.theta){
+                return 1;
+            }
+            else if(this.theta == scT.theta){
+                if(this.phi<scT.phi){
+                    return -1;
+                }
+                else if(this.phi>scT.phi){
+                    return 1;
+                }
+                else if(this.phi==scT.phi){
+                    return 0;
+                }
+            }
+            
+        }
+        else{
+            throw new ClassCastException();
+        }
+        throw new NullPointerException();
     }
 }
